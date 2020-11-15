@@ -12,17 +12,23 @@ galleryRef.addEventListener('click', onOpenModal);
 buttonCloseRef.addEventListener('click', onCloseModal);
 lightboxOverlay.addEventListener('click', onOverlayClick);
 
+let currentIndexImg = null;
+
 function onOpenModal(event) {
   event.preventDefault();
   window.addEventListener('keydown', onPressEscape);
+  window.addEventListener('keydown', onPressArrowLeftAndArrowRight);
   if (event.target.nodeName !== 'IMG') return;
   lightbox.classList.add('is-open');
   imgModalRef.src = event.target.dataset.source;
   imgModalRef.alt = event.target.alt;
+
+  currentIndexImg = Number(event.target.dataset.index);
 }
 
 function onCloseModal() {
-  window.addEventListener('keydown', onPressEscape);
+  window.removeEventListener('keydown', onPressEscape);
+  window.removeEventListener('keydown', onPressArrowLeftAndArrowRight);
   lightbox.classList.remove('is-open');
   imgModalRef.src = '';
   imgModalRef.alt = '';
@@ -40,26 +46,43 @@ function onPressEscape(event) {
   }
 }
 
-const getTemplate = obj => {
+function onPressArrowLeftAndArrowRight(event) {
+  let index;
+
+  if (event.code === 'ArrowLeft') {
+    index = currentIndexImg -= 1;
+  }
+  if (event.code === 'ArrowRight') {
+    index = currentIndexImg += 1;
+  }
+  if (index < 0 || index > 8) return;
+  imgModalRef.src = galleryItems[index].original;
+  imgModalRef.alt = galleryItems[index].description;
+}
+
+const getTemplate = ({ preview, original, description }, i) => {
   const li = document.createElement('li');
   li.classList.add('gallery__item');
 
   const a = document.createElement('a');
   a.classList.add('gallery__link');
-  a.setAttribute('href', obj.original);
+  a.setAttribute('href', original);
 
   const img = document.createElement('img');
   img.classList.add('gallery__image');
-  img.setAttribute('src', obj.preview);
-  img.dataset.source = obj.original;
-  img.setAttribute('alt', obj.description);
+  img.setAttribute('src', preview);
+  img.dataset.source = original;
+  img.setAttribute('alt', description);
+  img.dataset.index = i;
 
   a.appendChild(img);
   li.appendChild(a);
   return li;
 };
 
-const arrElements = galleryItems.map(object => getTemplate(object));
+const arrElements = galleryItems.map((object, index) =>
+  getTemplate(object, index),
+);
 galleryRef.append(...arrElements);
 
 // const innerLiToElement = (array, element) => {
