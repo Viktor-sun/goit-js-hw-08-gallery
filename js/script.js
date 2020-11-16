@@ -85,11 +85,11 @@ const arrElements = galleryItems.map((object, index) =>
 );
 galleryRef.append(...arrElements);
 
-// const innerLiToElement = (array, element) => {
-//   array.forEach(object =>
-//     element.insertAdjacentHTML(
-//       'beforeend',
-//       `<li class="gallery__item">
+// const getTemplate = array => {
+//   return array
+//     .map(
+//       (object, i) =>
+//         `<li class="gallery__item">
 //       <a
 //         class="gallery__link"
 //         href="${object.original}"
@@ -97,13 +97,15 @@ galleryRef.append(...arrElements);
 //         <img
 //           class="gallery__image"
 //           src="${object.preview}"
+//           data-index="${i}"
 //           data-source="${object.original}"
 //           alt="${object.description}"
 //         />
 //       </a>
 //     </li>`,
-//     ),
-//   );
+//     )
+//     .join('');
 // };
 
-// innerLiToElement(galleryItems, galleryRef);
+// const template = getTemplate(galleryItems);
+// const innerLiToElement = galleryRef.insertAdjacentHTML('beforeend', template);
